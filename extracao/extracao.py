@@ -1,6 +1,4 @@
 import tweepy
-import os
-from pyspark.sql import SparkSession, DataFrame
 import json
 
 # Abra o arquivo contendo as credenciais
@@ -36,8 +34,6 @@ class TwitterAPI:
                 retweet_count = tweet.retweet_count
                 favorite_count = tweet.favorite_count
                 tweet_data.append((created_at, text, user, retweet_count, favorite_count))
-                #print(tweet_data)
-                print(created_at, text)
         except tweepy.TweepyException as te:
             print(f"Erro ao fazer a solicitação à API do Twitter: {str(te)}")
 
