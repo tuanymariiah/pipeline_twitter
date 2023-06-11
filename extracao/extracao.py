@@ -3,10 +3,10 @@ import json
 import pandas as pd
 import os
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StringType, StructField, StructType, DateType
+from pyspark.sql.types import StringType, StructField, StructType, DateType, BooleanType, TimestampType
 from pyspark.sql.functions import to_utc_timestamp
 from pyspark.sql.functions import count
-
+import pprint
 
 spark = SparkSession.builder.getOrCreate()# Abra o arquivo contendo as credenciais
 with open(r'/Users/tuanymariah/Documents/pipeline_twitter/keys.json') as file:
@@ -41,15 +41,21 @@ class TwitterAPI:
             user = tweet.user.name
             retweet_count = tweet.retweet_count
             favorite_count = tweet.favorite_count
+            source = tweet.source
+            favorited = tweet.favorited
+            retweeted = tweet.retweeted
 
-            tweet_data.append((created_at, text, user, retweet_count, favorite_count))
+            tweet_data.append((created_at, text, user,retweet_count, favorite_count, source, favorited, retweeted))
 
         schema = StructType([
             StructField("created_at", DateType(), True),
             StructField("text", StringType(), True),
             StructField("user", StringType(), True),
             StructField("retweet_count", StringType(), True),
-            StructField("favorite_count", StringType(), True)
+            StructField("favorite_count", StringType(), True),
+            StructField("os", StringType(), True),
+            StructField("favorite", BooleanType(), True),
+            StructField("retweeted", BooleanType(), True)
         ])
         df = spark.createDataFrame(tweet_data, schema)
         df = df.withColumn("created_at", df["created_at"].cast("string"))
@@ -59,5 +65,5 @@ class TwitterAPI:
 
 if __name__ == '__main__':
     tw = TwitterAPI()
-    df = tw.extract_data(q='lula', lang='pt', count=100)
+    df = tw.extract_data(q='lula', lang='pt', count=15000)
 
