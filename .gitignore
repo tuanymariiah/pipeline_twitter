@@ -1,2 +1,6 @@
+#credenciais
 keys.txt
 keys.json
+
+#dados
+data/etl.csv
