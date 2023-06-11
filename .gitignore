@@ -3,4 +3,7 @@ keys.txt
 keys.json
 
 #dados
-data/etl.csv
+#data/etl.csv
+/Users/tuanymariah/Documents/pipeline_twitter/data/
+
+__pycache__

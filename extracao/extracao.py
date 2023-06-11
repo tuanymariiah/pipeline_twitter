@@ -1,15 +1,16 @@
 import tweepy
+import sys
+print(sys.path)
+sys.path.append('/Users/tuanymariah/Documents/pipeline_twitter')
+
 import json
-import pandas as pd
-import os
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StringType, StructField, StructType, DateType, BooleanType, TimestampType
-from pyspark.sql.functions import to_utc_timestamp
-from pyspark.sql.functions import count
-import pprint
+from lib.read_write import Read_Write
 
 spark = SparkSession.builder.getOrCreate()# Abra o arquivo contendo as credenciais
-with open(r'/Users/tuanymariah/Documents/pipeline_twitter/keys.json') as file:
+
+with open(r'keys.json') as file:
     data = json.load(file)
 
 TWITTER_CONSUMER_KEY = data['TWITTER_CONSUMER_KEY']
@@ -59,11 +60,11 @@ class TwitterAPI:
         ])
         df = spark.createDataFrame(tweet_data, schema)
         df = df.withColumn("created_at", df["created_at"].cast("string"))
-        #df.write.mode("overwrite").option("header", "true").csv("/Users/tuanymariah/Documents/pipeline_twitter/data/etl.csv")
+        Read_Write().write_parquet(df, f'./data/{lang}/raw/')
         return df
  
 
 if __name__ == '__main__':
     tw = TwitterAPI()
-    df = tw.extract_data(q='lula', lang='pt', count=15000)
-
+    df = tw.extract_data(q='lula', lang='en', count=20)
+    print(df.show(n=10, truncate=False))
